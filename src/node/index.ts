@@ -20,6 +20,7 @@ export type Node =
   ForOfStatement |
   IfStatement |
   ReturnStatement |
+  ThrowStatement |
   SwitchCase |
   SwitchStatement |
   TryStatement |
