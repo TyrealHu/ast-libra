@@ -1,5 +1,10 @@
-import { Node as _N } from '../node'
+import { base } from 'acorn-walk'
+import type { AcornNodeType } from '../node'
+import type { TraverseWalk } from './type'
 
-export class Traverse {
+export function traverse<State>(
+  node: AcornNodeType,
+  walk: TraverseWalk
+) {
 
 }
