@@ -1,80 +1,83 @@
-import type { AcornNodeTypeMap, AcornNodeTypeString } from '../node'
+import type { AcornNodeTypeMap } from '../node'
 
-type WalkFunc<T extends AcornNodeTypeString> = (node: AcornNodeTypeMap[T]) => any
+type WalkFunc<T extends keyof AcornNodeTypeMap, TState> = (
+    node: AcornNodeTypeMap[T],
+    state: TState
+) => any
 
-export interface BaseWalk {
-  Program: WalkFunc<'Program'>;
-  BreakStatement: WalkFunc<'BreakStatement'>;
-  ContinueStatement: WalkFunc<'ContinueStatement'>;
-  DebuggerStatement: WalkFunc<'DebuggerStatement'>;
-  DoWhileStatement: WalkFunc<'DoWhileStatement'>;
-  ForStatement: WalkFunc<'ForStatement'>;
-  ForInStatement: WalkFunc<'ForInStatement'>;
-  ForOfStatement: WalkFunc<'ForOfStatement'>;
-  IfStatement: WalkFunc<'IfStatement'>;
-  ReturnStatement: WalkFunc<'ReturnStatement'>;
-  ThrowStatement: WalkFunc<'ThrowStatement'>;
-  SwitchCase: WalkFunc<'SwitchCase'>;
-  SwitchStatement: WalkFunc<'SwitchStatement'>;
-  TryStatement: WalkFunc<'TryStatement'>;
-  CatchClause: WalkFunc<'CatchClause'>;
-  VariableDeclaration: WalkFunc<'VariableDeclaration'>;
-  VariableDeclarator: WalkFunc<'VariableDeclarator'>;
-  WhileStatement: WalkFunc<'WhileStatement'>;
-  WithStatement: WalkFunc<'WithStatement'>;
-  EmptyStatement: WalkFunc<'EmptyStatement'>;
-  LabeledStatement: WalkFunc<'LabeledStatement'>;
-  ExpressionStatement: WalkFunc<'ExpressionStatement'>;
-  BlockStatement: WalkFunc<'BlockStatement'>;
-  FunctionDeclaration: WalkFunc<'FunctionDeclaration'>;
-  FunctionExpression: WalkFunc<'FunctionExpression'>;
-  ClassDeclaration: WalkFunc<'ClassDeclaration'>;
-  ClassExpression: WalkFunc<'ClassExpression'>;
-  ClassBody: WalkFunc<'ClassBody'>;
-  MethodDefinition: WalkFunc<'MethodDefinition'>;
-  PropertyDefinition: WalkFunc<'PropertyDefinition'>;
-  StaticBlock: WalkFunc<'StaticBlock'>;
-  ExportAllDeclaration: WalkFunc<'ExportAllDeclaration'>;
-  ExportSpecifier: WalkFunc<'ExportSpecifier'>;
-  ExportNamedDeclaration: WalkFunc<'ExportNamedDeclaration'>;
-  ExportDefaultDeclaration: WalkFunc<'ExportDefaultDeclaration'>;
-  ImportDeclaration: WalkFunc<'ImportDeclaration'>;
-  ImportNamespaceSpecifier: WalkFunc<'ImportNamespaceSpecifier'>;
-  ImportDefaultSpecifier: WalkFunc<'ImportDefaultSpecifier'>;
-  ImportSpecifier: WalkFunc<'ImportSpecifier'>;
-  SequenceExpression: WalkFunc<'SequenceExpression'>;
-  YieldExpression: WalkFunc<'YieldExpression'>;
-  AssignmentExpression: WalkFunc<'AssignmentExpression'>;
-  ConditionalExpression: WalkFunc<'ConditionalExpression'>;
-  LogicalExpression: WalkFunc<'LogicalExpression'>;
-  BinaryExpression: WalkFunc<'BinaryExpression'>;
-  UpdateExpression: WalkFunc<'UpdateExpression'>;
-  UnaryExpression: WalkFunc<'UnaryExpression'>;
-  ChainExpression: WalkFunc<'ChainExpression'>;
-  MemberExpression: WalkFunc<'MemberExpression'>;
-  CallExpression: WalkFunc<'CallExpression'>;
-  TaggedTemplateExpression: WalkFunc<'TaggedTemplateExpression'>;
-  ThisExpression: WalkFunc<'ThisExpression'>;
-  Super: WalkFunc<'Super'>;
-  Literal: WalkFunc<'Literal'>;
-  ParenthesizedExpression: WalkFunc<'ParenthesizedExpression'>;
-  ArrayExpression: WalkFunc<'ArrayExpression'>;
-  Identifier: WalkFunc<'Identifier'>;
-  MetaProperty: WalkFunc<'MetaProperty'>;
-  ImportExpression: WalkFunc<'ImportExpression'>;
-  NewExpression: WalkFunc<'NewExpression'>;
-  TemplateElement: WalkFunc<'TemplateElement'>;
-  TemplateLiteral: WalkFunc<'TemplateLiteral'>;
-  ObjectExpression: WalkFunc<'ObjectExpression'>;
-  SpreadElement: WalkFunc<'SpreadElement'>;
-  Property: WalkFunc<'Property'>;
-  PrivateIdentifier: WalkFunc<'PrivateIdentifier'>;
-  ObjectPattern: WalkFunc<'ObjectPattern'>;
-  ArrayPattern: WalkFunc<'ArrayPattern'>;
-  RestElement: WalkFunc<'RestElement'>;
-  AssignmentPattern: WalkFunc<'AssignmentPattern'>;
-  ArrowFunctionExpression: WalkFunc<'ArrowFunctionExpression'>;
-  AwaitExpression: WalkFunc<'AwaitExpression'>;
+export interface BaseWalk<TState> {
+    Program: WalkFunc<'Program', TState>
+    BreakStatement: WalkFunc<'BreakStatement', TState>
+    ContinueStatement: WalkFunc<'ContinueStatement', TState>
+    DebuggerStatement: WalkFunc<'DebuggerStatement', TState>
+    DoWhileStatement: WalkFunc<'DoWhileStatement', TState>
+    ForStatement: WalkFunc<'ForStatement', TState>
+    ForInStatement: WalkFunc<'ForInStatement', TState>
+    ForOfStatement: WalkFunc<'ForOfStatement', TState>
+    IfStatement: WalkFunc<'IfStatement', TState>
+    ReturnStatement: WalkFunc<'ReturnStatement', TState>
+    ThrowStatement: WalkFunc<'ThrowStatement', TState>
+    SwitchCase: WalkFunc<'SwitchCase', TState>
+    SwitchStatement: WalkFunc<'SwitchStatement', TState>
+    TryStatement: WalkFunc<'TryStatement', TState>
+    CatchClause: WalkFunc<'CatchClause', TState>
+    VariableDeclaration: WalkFunc<'VariableDeclaration', TState>
+    VariableDeclarator: WalkFunc<'VariableDeclarator', TState>
+    WhileStatement: WalkFunc<'WhileStatement', TState>
+    WithStatement: WalkFunc<'WithStatement', TState>
+    EmptyStatement: WalkFunc<'EmptyStatement', TState>
+    LabeledStatement: WalkFunc<'LabeledStatement', TState>
+    ExpressionStatement: WalkFunc<'ExpressionStatement', TState>
+    BlockStatement: WalkFunc<'BlockStatement', TState>
+    FunctionDeclaration: WalkFunc<'FunctionDeclaration', TState>
+    FunctionExpression: WalkFunc<'FunctionExpression', TState>
+    ClassDeclaration: WalkFunc<'ClassDeclaration', TState>
+    ClassExpression: WalkFunc<'ClassExpression', TState>
+    ClassBody: WalkFunc<'ClassBody', TState>
+    MethodDefinition: WalkFunc<'MethodDefinition', TState>
+    PropertyDefinition: WalkFunc<'PropertyDefinition', TState>
+    StaticBlock: WalkFunc<'StaticBlock', TState>
+    ExportAllDeclaration: WalkFunc<'ExportAllDeclaration', TState>
+    ExportSpecifier: WalkFunc<'ExportSpecifier', TState>
+    ExportNamedDeclaration: WalkFunc<'ExportNamedDeclaration', TState>
+    ExportDefaultDeclaration: WalkFunc<'ExportDefaultDeclaration', TState>
+    ImportDeclaration: WalkFunc<'ImportDeclaration', TState>
+    ImportNamespaceSpecifier: WalkFunc<'ImportNamespaceSpecifier', TState>
+    ImportDefaultSpecifier: WalkFunc<'ImportDefaultSpecifier', TState>
+    ImportSpecifier: WalkFunc<'ImportSpecifier', TState>
+    SequenceExpression: WalkFunc<'SequenceExpression', TState>
+    YieldExpression: WalkFunc<'YieldExpression', TState>
+    AssignmentExpression: WalkFunc<'AssignmentExpression', TState>
+    ConditionalExpression: WalkFunc<'ConditionalExpression', TState>
+    LogicalExpression: WalkFunc<'LogicalExpression', TState>
+    BinaryExpression: WalkFunc<'BinaryExpression', TState>
+    UpdateExpression: WalkFunc<'UpdateExpression', TState>
+    UnaryExpression: WalkFunc<'UnaryExpression', TState>
+    ChainExpression: WalkFunc<'ChainExpression', TState>
+    MemberExpression: WalkFunc<'MemberExpression', TState>
+    CallExpression: WalkFunc<'CallExpression', TState>
+    TaggedTemplateExpression: WalkFunc<'TaggedTemplateExpression', TState>
+    ThisExpression: WalkFunc<'ThisExpression', TState>
+    Super: WalkFunc<'Super', TState>
+    Literal: WalkFunc<'Literal', TState>
+    ParenthesizedExpression: WalkFunc<'ParenthesizedExpression', TState>
+    ArrayExpression: WalkFunc<'ArrayExpression', TState>
+    Identifier: WalkFunc<'Identifier', TState>
+    MetaProperty: WalkFunc<'MetaProperty', TState>
+    ImportExpression: WalkFunc<'ImportExpression', TState>
+    NewExpression: WalkFunc<'NewExpression', TState>
+    TemplateElement: WalkFunc<'TemplateElement', TState>
+    TemplateLiteral: WalkFunc<'TemplateLiteral', TState>
+    ObjectExpression: WalkFunc<'ObjectExpression', TState>
+    SpreadElement: WalkFunc<'SpreadElement', TState>
+    Property: WalkFunc<'Property', TState>
+    PrivateIdentifier: WalkFunc<'PrivateIdentifier', TState>
+    ObjectPattern: WalkFunc<'ObjectPattern', TState>
+    ArrayPattern: WalkFunc<'ArrayPattern', TState>
+    RestElement: WalkFunc<'RestElement', TState>
+    AssignmentPattern: WalkFunc<'AssignmentPattern', TState>
+    ArrowFunctionExpression: WalkFunc<'ArrowFunctionExpression', TState>
+    AwaitExpression: WalkFunc<'AwaitExpression', TState>
 }
 
-export type TraverseWalk = Partial<BaseWalk>
+export type TraverseWalk<State> = Partial<BaseWalk<State>>
