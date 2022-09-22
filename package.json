@@ -8,6 +8,7 @@
   "types": "lib/index.d.ts",
   "unpkg": "lib/index.umd.js",
   "scripts": {
+    "start": "ts-node ./src/index.ts",
     "build:clear": "yarn run clear && yarn run build",
     "dev:clear": "yarn run clear && yarn run dev",
     "build": "microbundle --define process.env.NODE_ENV=production --sourcemap false --jsx React.createElement --tsconfig ./tsconfig.json",
@@ -43,7 +44,8 @@
     "prettier": "^2.0.0",
     "ts-jest": "^26.0.0",
     "tslint": "^5.14.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.5",
+    "ts-node": "^10.9.1"
   },
   "husky": {
     "hooks": {
