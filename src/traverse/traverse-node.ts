@@ -1,4 +1,4 @@
-import { base } from 'acorn-walk'
+import Walk from '../walk'
 import type { AcornNodeType, AcornNodeTypeString } from '../node'
 import type { TraverseWalk } from './type'
 
@@ -26,7 +26,7 @@ export class TraverseNode<State> {
 
         // ignore the next line, because of acornjs didn't support NodeType
         // @ts-ignore
-        base[nowType](node, state, this.run.bind(this))
+        Walk[nowType](node, state, this.run.bind(this))
 
         const walkFun = this.walk[nowType]
 

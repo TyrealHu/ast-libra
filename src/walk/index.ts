@@ -74,13 +74,7 @@ import type {
     YieldExpression
 } from '../node'
 
-function skipThrough(node: Statement | MemberExpression | Expression, state, runFnc) {
-    runFnc(node, state)
-}
-
-function ignore(_node, _st, _c) {}
-
-export const base = {
+export default {
     Program<TState>(node: Program, state: TState, runFuc: any) {
         for (let stmt of node.body) runFuc(stmt, state, 'Statement')
     },
@@ -198,6 +192,7 @@ export const base = {
         state: State,
         runFnc: any
     ) {
+        // @ts-ignore
         if (node.id) runFnc(node.id, state, 'Pattern')
         for (let param of node.params) runFnc(param, state, 'Pattern')
         runFnc(node.body, state, node.expression ? 'Expression' : 'Statement')
