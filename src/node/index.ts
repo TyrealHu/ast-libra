@@ -1,13 +1,14 @@
 import { AcornNodeType } from './type'
+import { parse } from '../parse'
 
 export default class NodeManager {
     private node: AcornNodeType
     // @ts-ignore
-    private parentNode: AcornNodeType
+    private parentNode?: AcornNodeType
     // @ts-ignore
-    private key: string
+    private key?: string
 
-    constructor(node: AcornNodeType, parentNode: AcornNodeType, key: string) {
+    constructor(node: AcornNodeType, parentNode?: AcornNodeType, key?: string) {
         this.node = node
         this.parentNode = parentNode
         this.key = key
@@ -34,11 +35,37 @@ export default class NodeManager {
         // todo 在这里得给parent通知需要给这个node之后插入node
     }
 
-    insertCodeBefore(_code: string) {
+    /**
+     * @param input This is the code input.
+     *
+     * @description This method can only support insert Statement Node
+     * before the NodeManager's parentNode
+     * */
+    insertCodeBefore(input: string) {
         // todo 在这里得给parent通知需要给这个node之前插入node
+        const program = parse(input, {
+            ecmaVersion: 'latest',
+            sourceType: 'script'
+        })
+        // @ts-ignore
+        const nodes = program.body
     }
 
-    insertCodeAfter(_code: string) {
+    /**
+     * @param input This is the code input.
+     *
+     * @description This method can only support insert Statement Node
+     * after the NodeManager's parentNode
+     * */
+    insertCodeAfter(input: string) {
+        if (!this.parentNode) {
+        }
         // todo 在这里得给parent通知需要给这个node之后插入node
+        const program = parse(input, {
+            ecmaVersion: 'latest',
+            sourceType: 'script'
+        })
+        // @ts-ignore
+        const nodes = program.body
     }
 }
