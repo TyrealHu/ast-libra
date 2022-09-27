@@ -1,6 +1,6 @@
 import { parse as _parse } from 'acorn'
 import traverse from './traverse'
-import { Program } from './node'
+import { Program } from './node/type'
 
 traverse(
     _parse(

@@ -1,5 +1,5 @@
 import { generate as astringGenerate } from 'astring'
-import type { AcornNodeType } from '../node'
+import type { AcornNodeType } from '../node/type'
 import type { Generator } from 'astring'
 import type { SourceMapGenerator } from 'source-map'
 

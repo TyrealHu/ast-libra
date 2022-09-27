@@ -1,17 +1,16 @@
 import Walk from '../walk'
-import type { AcornNodeType, AcornNodeTypeString } from '../node'
+import type { AcornNodeType, AcornNodeTypeString } from '../node/type'
 import type { TraverseWalk } from './type'
 
 export class TraverseNode<State> {
     private node: AcornNodeType
-    private walk: TraverseWalk<State>
+    private walk: Walk<State>
     private state: State | undefined
     private ancestors: AcornNodeType[]
 
     constructor(node: AcornNodeType, walk: TraverseWalk<State>, state?: State) {
-        debugger
         this.node = node
-        this.walk = walk
+        this.walk = new Walk<State>(walk, state)
         this.state = state
         this.ancestors = []
     }
@@ -19,22 +18,13 @@ export class TraverseNode<State> {
     run(node: AcornNodeType, state?: State, type?: AcornNodeTypeString) {
         const nowType = type || node.type
         const topNode = this.ancestors[this.ancestors.length - 1]
-        debugger
+
         if (topNode !== node) {
             this.ancestors.push(node)
         }
 
-        // ignore the next line, because of acornjs didn't support NodeType
         // @ts-ignore
-        Walk[nowType](node, state, this.run.bind(this))
-
-        const walkFun = this.walk[nowType]
-
-        if (walkFun) {
-            // ignore the next line, because of the walkFun node is never
-            // @ts-ignore
-            walkFun(node, this.state)
-        }
+        this.walk[nowType](node, state, this.run.bind(this))
 
         if (topNode !== node) {
             this.ancestors.pop()

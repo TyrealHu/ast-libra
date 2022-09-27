@@ -1,8 +1,8 @@
-import type { AcornNodeTypeMap } from '../node'
+import type { AcornNodeTypeMap } from '../node/type'
 
 type WalkFunc<T extends keyof AcornNodeTypeMap, TState> = (
     node: AcornNodeTypeMap[T],
-    state: TState
+    state?: TState
 ) => any
 
 export interface BaseWalk<TState> {
