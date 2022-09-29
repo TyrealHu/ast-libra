@@ -2,17 +2,28 @@ import { AcornNodeType } from './type'
 import { parse } from '../parse'
 import { throwError } from '../help/error'
 
-export default class NodeManager {
-    private node: AcornNodeType | null
+export default class NodeManager<T extends AcornNodeType> {
+    private node: T | null
+    private newNode: AcornNodeType | null
     private parentNode: AcornNodeType | null
     private key: string | null
     private index: number | null
 
-    constructor(node: AcornNodeType, parentNode?: AcornNodeType, key?: string, index?: number) {
+    constructor(
+        node: T,
+        parentNode?: AcornNodeType,
+        key?: string,
+        index?: number
+    ) {
         this.node = node
         this.parentNode = parentNode || null
         this.key = key || null
         this.index = index || null
+        this.newNode = null
+    }
+
+    getNewNode() {
+        return this.newNode
     }
 
     /**
@@ -21,7 +32,7 @@ export default class NodeManager {
      * */
     replaceWith(newNode: AcornNodeType) {
         if (newNode !== this.node) {
-            this.node = newNode
+            this.newNode = newNode
         }
     }
 
@@ -36,7 +47,9 @@ export default class NodeManager {
         })
 
         if (program.body.length !== 1) {
-            throwError(`The input of replaceWithCode function could only be one node`)
+            throwError(
+                `The input of replaceWithCode function could only be one node`
+            )
         }
 
         this.replaceWith(program.body[0])

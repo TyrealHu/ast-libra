@@ -74,6 +74,8 @@ import type {
     YieldExpression
 } from '../node/type'
 import type { TraverseWalk } from '../traverse/type'
+import NodeManager from '../node'
+import { LVal } from '../node/type'
 
 export default class Walk<State> {
     private userWalk: TraverseWalk<State>
@@ -84,375 +86,491 @@ export default class Walk<State> {
         this.state = state
     }
 
-    Program<TState>(node: Program, state: TState, runFuc: any) {
-        this.userWalk['Program'] && this.userWalk['Program'](node, this.state)
+    runByType(newNode: AcornNodeType, state: State) {
+        const type = newNode.type
+        // @ts-ignore
+        this[type](newNode, state)
+    }
+
+    Program(node: Program, state: State) {
+        const nodeManager = new NodeManager<Program>(node)
+        this.userWalk['Program'] &&
+            this.userWalk['Program'](nodeManager, this.state)
+
+        const newNode = nodeManager.getNewNode()
+        if (newNode) {
+            this.runByType(newNode, state)
+            return
+        }
 
         for (let stmt of node.body) {
-            runFuc(stmt, state, 'Statement')
+            this.Statement(stmt, state)
         }
     }
 
-    BlockStatement<TState>(node: BlockStatement, state: TState, runFuc: any) {
-        for (let stmt of node.body) runFuc(stmt, state, 'Statement')
+    BlockStatement(node: BlockStatement, state: State) {
+        for (let stmt of node.body) {
+            this.Statement(stmt, state)
+        }
     }
 
-    StaticBlock<TState>(node: StaticBlock, state: TState, runFnc: any) {
-        for (let stmt of node.body) runFnc(stmt, state, 'Statement')
+    StaticBlock(node: StaticBlock, state: State) {
+        for (let stmt of node.body) {
+            this.Statement(stmt, state)
+        }
     }
 
-    Statement<State>(node: Statement, state: State, runFnc: any) {
-        runFnc(node, state)
+    Statement(node: AcornNodeType, state: State) {
+        this.runByType(node, state)
     }
 
-    EmptyStatement<State>(_node: Statement, _state: State, _runFnc: any) {}
+    EmptyStatement(_node: Statement, _state: State) {}
 
-    ExpressionStatement<State>(node: ExpressionStatement, state: State, runFnc: any) {
-        runFnc(node.expression, state, 'Expression')
+    ExpressionStatement(node: ExpressionStatement, state: State) {
+        this.Expression(node.expression, state)
     }
 
-    ParenthesizedExpression<State>(node: ParenthesizedExpression, state: State, runFnc: any) {
-        runFnc(node.expression, state, 'Expression')
+    ParenthesizedExpression(node: ParenthesizedExpression, state: State) {
+        this.Expression(node.expression, state)
     }
 
-    ChainExpression<State>(node: ChainExpression, state: State, runFnc: any) {
-        runFnc(node.expression, state, 'Expression')
+    ChainExpression(node: ChainExpression, state: State) {
+        this.Expression(node.expression, state)
     }
 
-    IfStatement<State>(node: IfStatement, state: State, runFnc: any) {
-        runFnc(node.test, state, 'Expression')
-        runFnc(node.consequent, state, 'Statement')
+    IfStatement(node: IfStatement, state: State) {
+        this.Expression(node.test, state)
+        this.Statement(node.consequent, state)
         if (node.alternate) {
-            runFnc(node.alternate, state, 'Statement')
+            this.Statement(node.alternate, state)
         }
     }
 
-    LabeledStatement<State>(node: LabeledStatement, state: State, runFnc: any) {
-        runFnc(node.body, state, 'LabeledStatement')
+    LabeledStatement(node: LabeledStatement, state: State) {
+        this.Statement(node.body, state)
     }
 
-    BreakStatement<State>(_node: BreakStatement, _state: State, _runFnc: any) {}
+    BreakStatement(_node: BreakStatement, _state: State) {}
 
-    ContinueStatement<State>(_node: ContinueStatement, _state: State, _runFnc: any) {}
+    ContinueStatement(_node: ContinueStatement, _state: State) {}
 
-    WithStatement<State>(node: WithStatement, state: State, runFnc: any) {
-        runFnc(node.object, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    WithStatement(node: WithStatement, state: State) {
+        this.Expression(node.object, state)
+        this.Statement(node.body, state)
     }
 
-    SwitchStatement<State>(node: SwitchStatement, state: State, runFnc: any) {
-        runFnc(node.discriminant, state, 'Expression')
+    SwitchStatement(node: SwitchStatement, state: State) {
+        this.Expression(node.discriminant, state)
         for (let cs of node.cases) {
-            if (cs.test) runFnc(cs.test, state, 'Expression')
-            for (let cons of cs.consequent) runFnc(cons, state, 'Statement')
+            if (cs.test) this.Expression(cs.test, state)
+            for (let cons of cs.consequent) this.Statement(cons, state)
         }
     }
 
-    SwitchCase<State>(node: SwitchCase, state: State, runFnc: any) {
-        if (node.test) runFnc(node.test, state, 'Expression')
-        for (let cons of node.consequent) runFnc(cons, state, 'Statement')
+    SwitchCase(node: SwitchCase, state: State) {
+        if (node.test) {
+            this.Expression(node.test, state)
+        }
+        for (let cons of node.consequent) {
+            this.Statement(cons, state)
+        }
     }
 
-    AwaitExpression<State>(node: AwaitExpression, state: State, runFnc: any) {
-        if (node.argument) runFnc(node.argument, state, 'Expression')
+    AwaitExpression(node: AwaitExpression, state: State) {
+        if (node.argument) {
+            this.Expression(node.argument, state)
+        }
     }
 
-    ReturnStatement<State>(node: ReturnStatement, state: State, runFnc: any) {
-        if (node.argument) runFnc(node.argument, state, 'Expression')
+    ReturnStatement(node: ReturnStatement, state: State) {
+        if (node.argument) {
+            this.Expression(node.argument, state)
+        }
     }
 
-    YieldExpression<State>(node: YieldExpression, state: State, runFnc: any) {
-        if (node.argument) runFnc(node.argument, state, 'Expression')
+    YieldExpression(node: YieldExpression, state: State) {
+        if (node.argument) {
+            this.Expression(node.argument, state)
+        }
     }
 
-    ThrowStatement<State>(node: ThrowStatement, state: State, runFnc: any) {
-        if (node.argument) runFnc(node.argument, state, 'Expression')
+    ThrowStatement(node: ThrowStatement, state: State) {
+        this.Expression(node.argument, state)
     }
 
-    SpreadElement<State>(node: SpreadElement, state: State, runFnc: any) {
-        if (node.argument) runFnc(node.argument, state, 'Expression')
+    SpreadElement(node: SpreadElement, state: State) {
+        this.Expression(node.argument, state)
     }
 
-    TryStatement<State>(node: TryStatement, state: State, runFnc: any) {
-        runFnc(node.block, state, 'Statement')
-        if (node.handler) runFnc(node.handler, state)
-        if (node.finalizer) runFnc(node.finalizer, state, 'Statement')
+    TryStatement(node: TryStatement, state: State) {
+        this.Statement(node.block, state)
+        if (node.handler) {
+            this.runByType(node.handler, state)
+        }
+        if (node.finalizer) {
+            this.Statement(node.finalizer, state)
+        }
     }
 
-    CatchClause<State>(node: CatchClause, state: State, runFnc: any) {
-        if (node.param) runFnc(node.param, state, 'Pattern')
-        runFnc(node.body, state, 'Statement')
+    CatchClause(node: CatchClause, state: State) {
+        if (node.param) {
+            this.Pattern(node.param, state)
+        }
+        this.Statement(node.body, state)
     }
 
-    DoWhileStatement<State>(node: DoWhileStatement, state: State, runFnc: any) {
-        runFnc(node.test, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    DoWhileStatement(node: DoWhileStatement, state: State) {
+        this.Expression(node.test, state)
+        this.Statement(node.body, state)
     }
 
-    WhileStatement<State>(node: WhileStatement, state: State, runFnc: any) {
-        runFnc(node.test, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    WhileStatement(node: WhileStatement, state: State) {
+        this.Expression(node.test, state)
+        this.Statement(node.body, state)
     }
 
-    ForStatement<State>(node: ForStatement, state: State, runFnc: any) {
-        if (node.init) runFnc(node.init, state, 'ForInit')
-        if (node.test) runFnc(node.test, state, 'Expression')
-        if (node.update) runFnc(node.update, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    ForStatement(node: ForStatement, state: State) {
+        if (node.init) {
+            this.ForInit(node.init, state)
+        }
+        if (node.test) {
+            this.Expression(node.test, state)
+        }
+        if (node.update) {
+            this.Expression(node.update, state)
+        }
+        this.Statement(node.body, state)
     }
 
-    ForInStatement<State>(node: ForInStatement, state: State, runFnc: any) {
-        runFnc(node.left, state, 'ForInit')
-        runFnc(node.right, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    ForInStatement(node: ForInStatement, state: State) {
+        this.ForInit(node.left, state)
+        this.Expression(node.right, state)
+        this.Statement(node.body, state)
     }
 
-    ForOfStatement<State>(node: ForOfStatement, state: State, runFnc: any) {
-        runFnc(node.left, state, 'ForInit')
-        runFnc(node.right, state, 'Expression')
-        runFnc(node.body, state, 'Statement')
+    ForOfStatement(node: ForOfStatement, state: State) {
+        this.ForInit(node.left, state)
+        this.Expression(node.right, state)
+        this.Statement(node.body, state)
     }
 
-    ForInit<State>(node: Expression | VariableDeclaration, state: State, runFnc: any) {
-        if (node.type === 'VariableDeclaration') runFnc(node, state)
-        else runFnc(node, state, 'Expression')
+    ForInit(node: Expression | VariableDeclaration | LVal, state: State) {
+        if (node.type === 'VariableDeclaration') {
+            this.runByType(node, state)
+        } else {
+            this.Expression(node, state)
+        }
     }
 
-    DebuggerStatement<State>(_node: DebuggerStatement, _state: State, _runFnc: any) {}
+    DebuggerStatement(_node: DebuggerStatement, _state: State) {}
 
-    FunctionDeclaration<State>(node: FunctionDeclaration, state: State, runFnc: any) {
-        runFnc(node, state, 'Function')
+    FunctionDeclaration(node: FunctionDeclaration, state: State) {
+        this.Function(node, state)
     }
 
-    VariableDeclaration<State>(node: VariableDeclaration, state: State, runFnc: any) {
-        for (let decl of node.declarations) runFnc(decl, state)
+    VariableDeclaration(node: VariableDeclaration, state: State) {
+        for (let decl of node.declarations) {
+            this.runByType(decl, state)
+        }
     }
 
-    VariableDeclarator<State>(node: VariableDeclarator, state: State, runFnc: any) {
-        runFnc(node.id, state, 'Pattern')
-        if (node.init) runFnc(node.init, state, 'Expression')
+    VariableDeclarator(node: VariableDeclarator, state: State) {
+        this.Pattern(node.id, state)
+        if (node.init) {
+            this.Expression(node.init, state)
+        }
     }
 
-    Function<State>(
-        node: FunctionExpression | FunctionDeclaration | ArrowFunctionExpression,
-        state: State,
-        runFnc: any
+    Function(
+        node:
+            | FunctionExpression
+            | FunctionDeclaration
+            | ArrowFunctionExpression,
+        state: State
     ) {
-        // @ts-ignore
-        if (node.id) runFnc(node.id, state, 'Pattern')
-        for (let param of node.params) runFnc(param, state, 'Pattern')
-        runFnc(node.body, state, node.expression ? 'Expression' : 'Statement')
-    }
-
-    Pattern<State>(node: AcornNodeType, state: State, runFnc: any) {
-        if (node.type === 'Identifier') runFnc(node, state, 'VariablePattern')
-        else if (node.type === 'MemberExpression') runFnc(node, state, 'MemberPattern')
-        else runFnc(node, state)
-    }
-
-    VariablePattern<State>(_node: AcornNodeType, _state: State, _runFnc: any) {}
-
-    MemberPattern<State>(node: AcornNodeType, state: State, runFnc: any) {
-        runFnc(node, state)
-    }
-
-    RestElement<State>(node: RestElement, state: State, runFnc: any) {
-        runFnc(node.argument, state, 'Pattern')
-    }
-
-    ArrayPattern<State>(node: ArrayPattern, state: State, runFnc: any) {
-        for (let elt of node.elements) {
-            if (elt) runFnc(elt, state, 'Pattern')
+        if ('id' in node && node.id) {
+            this.Pattern(node.id, state)
+        }
+        for (let param of node.params) {
+            this.Pattern(param, state)
+        }
+        if (node.expression) {
+            this.Expression(node.body, state)
+        } else {
+            this.Statement(node.body, state)
         }
     }
 
-    ObjectPattern<State>(node: ObjectPattern, state: State, runFnc: any) {
-        for (let prop of node.properties) {
-            if (prop.type === 'Property') {
-                if (prop.computed) runFnc(prop.key, state, 'Expression')
-                runFnc(prop.value, state, 'Pattern')
-            } else if (prop.type === 'RestElement') {
-                runFnc(prop.argument, state, 'Pattern')
+    Pattern(node: AcornNodeType, state: State) {
+        if (node.type === 'Identifier') {
+            this.VariablePattern(node, state)
+        } else if (node.type === 'MemberExpression') {
+            this.MemberPattern(node, state)
+        } else {
+            this.runByType(node, state)
+        }
+    }
+
+    VariablePattern(_node: AcornNodeType, _state: State) {}
+
+    MemberPattern(node: AcornNodeType, state: State) {
+        this.runByType(node, state)
+    }
+
+    RestElement(node: RestElement, state: State) {
+        this.Pattern(node.argument, state)
+    }
+
+    ArrayPattern(node: ArrayPattern, state: State) {
+        for (let elt of node.elements) {
+            if (elt) {
+                this.Pattern(elt, state)
             }
         }
     }
 
-    Expression<State>(node: Expression, state: State, runFnc: any) {
-        runFnc(node, state)
-    }
-
-    ThisExpression<State>(_node: ThisExpression, _state: State, _runFnc: any) {}
-
-    Super<State>(_node: Super, _state: State, _runFnc: any) {}
-
-    MetaProperty<State>(_node: MetaProperty, _state: State, _runFnc: any) {}
-
-    ArrayExpression<State>(node: ArrayExpression, state: State, runFnc: any) {
-        for (let elt of node.elements) {
-            if (elt) runFnc(elt, state, 'Expression')
+    ObjectPattern(node: ObjectPattern, state: State) {
+        for (let prop of node.properties) {
+            if (prop.type === 'Property') {
+                if (prop.computed) {
+                    this.Expression(prop.key, state)
+                }
+                this.Pattern(prop.value, state)
+            } else if (prop.type === 'RestElement') {
+                this.Pattern(prop.argument, state)
+            }
         }
     }
 
-    ObjectExpression<State>(node: ObjectExpression, state: State, runFnc: any) {
-        for (let prop of node.properties) runFnc(prop, state)
+    Expression(node: AcornNodeType, state: State) {
+        this.runByType(node, state)
     }
 
-    FunctionExpression<State>(node: FunctionExpression, state: State, runFnc: any) {
-        runFnc(node, state, 'Function')
+    ThisExpression(_node: ThisExpression, _state: State) {}
+
+    Super(_node: Super, _state: State) {}
+
+    MetaProperty(_node: MetaProperty, _state: State) {}
+
+    ArrayExpression(node: ArrayExpression, state: State) {
+        for (let elt of node.elements) {
+            if (elt) {
+                this.Expression(elt, state)
+            }
+        }
     }
 
-    ArrowFunctionExpression<State>(node: ArrowFunctionExpression, state: State, runFnc: any) {
-        runFnc(node, state, 'Function')
+    ObjectExpression(node: ObjectExpression, state: State) {
+        for (let prop of node.properties) {
+            this.runByType(prop, state)
+        }
     }
 
-    SequenceExpression<State>(node: SequenceExpression, state: State, runFnc: any) {
-        for (let expr of node.expressions) runFnc(expr, state, 'Expression')
+    FunctionExpression(node: FunctionExpression, state: State) {
+        this.Function(node, state)
     }
 
-    TemplateLiteral<State>(node: TemplateLiteral, state: State, runFnc: any) {
-        for (let quasi of node.quasis) runFnc(quasi, state)
-
-        for (let expr of node.expressions) runFnc(expr, state, 'Expression')
+    ArrowFunctionExpression(node: ArrowFunctionExpression, state: State) {
+        this.Function(node, state)
     }
 
-    TemplateElement<State>(_node: TemplateElement, _state: State, _runFnc: any) {}
-
-    UpdateExpression<State>(node: UpdateExpression, state: State, runFnc: any) {
-        runFnc(node.argument, state, 'Expression')
+    SequenceExpression(node: SequenceExpression, state: State) {
+        for (let expr of node.expressions) {
+            this.Expression(expr, state)
+        }
     }
 
-    UnaryExpression<State>(node: UnaryExpression, state: State, runFnc: any) {
-        runFnc(node.argument, state, 'Expression')
+    TemplateLiteral(node: TemplateLiteral, state: State) {
+        for (let quasi of node.quasis) {
+            this.runByType(quasi, state)
+        }
+
+        for (let expr of node.expressions) {
+            this.Expression(expr, state)
+        }
     }
 
-    BinaryExpression<State>(node: BinaryExpression, state: State, runFnc: any) {
-        runFnc(node.left, state, 'Expression')
-        runFnc(node.right, state, 'Expression')
+    TemplateElement(_node: TemplateElement, _state: State) {}
+
+    UpdateExpression(node: UpdateExpression, state: State) {
+        this.Expression(node.argument, state)
     }
 
-    LogicalExpression<State>(node: LogicalExpression, state: State, runFnc: any) {
-        runFnc(node.left, state, 'Expression')
-        runFnc(node.right, state, 'Expression')
+    UnaryExpression(node: UnaryExpression, state: State) {
+        this.Expression(node.argument, state)
     }
 
-    AssignmentExpression<State>(node: AssignmentExpression, state: State, runFnc: any) {
-        runFnc(node.left, state, 'Pattern')
-        runFnc(node.right, state, 'Expression')
+    BinaryExpression(node: BinaryExpression, state: State) {
+        this.Expression(node.left, state)
+        this.Expression(node.right, state)
     }
 
-    AssignmentPattern<State>(node: AssignmentPattern, state: State, runFnc: any) {
-        runFnc(node.left, state, 'Pattern')
-        runFnc(node.right, state, 'Expression')
+    LogicalExpression(node: LogicalExpression, state: State) {
+        this.Expression(node.left, state)
+        this.Expression(node.right, state)
     }
 
-    ConditionalExpression<State>(node: ConditionalExpression, state: State, runFnc: any) {
-        runFnc(node.test, state, 'Expression')
-        runFnc(node.consequent, state, 'Expression')
-        runFnc(node.alternate, state, 'Expression')
+    AssignmentExpression(node: AssignmentExpression, state: State) {
+        this.Pattern(node.left, state)
+        this.Expression(node.right, state)
     }
 
-    NewExpression<State>(node: NewExpression, state: State, runFnc: any) {
-        runFnc(node.callee, state, 'Expression')
-        if (node.arguments) for (let arg of node.arguments) runFnc(arg, state, 'Expression')
+    AssignmentPattern(node: AssignmentPattern, state: State) {
+        this.Pattern(node.left, state)
+        this.Expression(node.right, state)
     }
 
-    CallExpression<State>(node: CallExpression, state: State, runFnc: any) {
-        runFnc(node.callee, state, 'Expression')
-        if (node.arguments) for (let arg of node.arguments) runFnc(arg, state, 'Expression')
+    ConditionalExpression(node: ConditionalExpression, state: State) {
+        this.Expression(node.test, state)
+        this.Expression(node.consequent, state)
+        this.Expression(node.alternate, state)
     }
 
-    MemberExpression<State>(node: MemberExpression, state: State, runFnc: any) {
-        runFnc(node.object, state, 'Expression')
-        if (node.computed) runFnc(node.property, state, 'Expression')
+    NewExpression(node: NewExpression, state: State) {
+        this.Expression(node.callee, state)
+        if (node.arguments) {
+            for (let arg of node.arguments) {
+                if (arg) {
+                    this.Expression(arg, state)
+                }
+            }
+        }
     }
 
-    ExportNamedDeclaration<State>(node: ExportNamedDeclaration, state: State, runFnc: any) {
-        if (node.declaration)
-            runFnc(
-                node.declaration,
-                state,
-                // @ts-ignore
-                node.type === 'ExportNamedDeclaration' || node.declaration.id
-                    ? 'Statement'
-                    : 'Expression'
-            )
-        if (node.source) runFnc(node.source, state, 'Expression')
+    CallExpression(node: CallExpression, state: State) {
+        this.Expression(node.callee, state)
+        if (node.arguments) {
+            for (let arg of node.arguments) {
+                if (arg) {
+                    this.Expression(arg, state)
+                }
+            }
+        }
     }
 
-    ExportDefaultDeclaration<State>(node: ExportDefaultDeclaration, state: State, runFnc: any) {
-        if (node.declaration)
-            runFnc(
-                node.declaration,
-                state,
-                // @ts-ignore
-                node.type === 'ExportNamedDeclaration' || node.declaration.id
-                    ? 'Statement'
-                    : 'Expression'
-            )
+    MemberExpression(node: MemberExpression, state: State) {
+        this.Expression(node.object, state)
+        if (node.computed) {
+            this.Expression(node.property, state)
+        }
+    }
+
+    ExportNamedDeclaration(node: ExportNamedDeclaration, state: State) {
+        if (node.declaration) {
+            if (
+                node.type === 'ExportNamedDeclaration' ||
+                ('id' in node.declaration && node.declaration.id)
+            ) {
+                this.Statement(node.declaration, state)
+            } else {
+                this.Expression(node.declaration, state)
+            }
+        }
+
+        if (node.source) {
+            this.Expression(node.source, state)
+        }
+    }
+
+    ExportDefaultDeclaration(node: ExportDefaultDeclaration, state: State) {
+        if (node.declaration) {
+            if ('id' in node.declaration && node.declaration.id) {
+                this.Statement(node.declaration, state)
+            } else {
+                this.Expression(node.declaration, state)
+            }
+        }
+
         // @ts-ignore
-        if (node.source) runFnc(node.source, state, 'Expression')
+        if (node.source) {
+            // @ts-ignore
+            this.Expression(node.source, state)
+        }
     }
 
-    ExportAllDeclaration<State>(node: ExportAllDeclaration, state: State, runFnc: any) {
-        if (node.exported) runFnc(node.exported, state)
-        runFnc(node.source, state, 'Expression')
+    ExportAllDeclaration(node: ExportAllDeclaration, state: State) {
+        if (node.exported) {
+            this.runByType(node.exported, state)
+        }
+        this.Expression(node.source, state)
     }
 
-    ImportDeclaration<State>(node: ImportDeclaration, state: State, runFnc: any) {
-        for (let spec of node.specifiers) runFnc(spec, state)
-        runFnc(node.source, state, 'Expression')
+    ImportDeclaration(node: ImportDeclaration, state: State) {
+        for (let spec of node.specifiers) {
+            this.runByType(spec, state)
+        }
+        this.Expression(node.source, state)
     }
 
-    ImportExpression<State>(node: ImportExpression, state: State, runFnc: any) {
-        runFnc(node.source, state, 'Expression')
+    ImportExpression(node: ImportExpression, state: State) {
+        this.Expression(node.source, state)
     }
 
-    ImportSpecifier<State>(_node: ImportSpecifier, _state: State, _runFnc: any) {}
+    ImportSpecifier(_node: ImportSpecifier, _state: State) {}
 
-    ImportDefaultSpecifier<State>(_node: ImportDefaultSpecifier, _state: State, _runFnc: any) {}
+    ImportDefaultSpecifier(_node: ImportDefaultSpecifier, _state: State) {}
 
-    ImportNamespaceSpecifier<State>(_node: ImportNamespaceSpecifier, _state: State, _runFnc: any) {}
+    ImportNamespaceSpecifier(_node: ImportNamespaceSpecifier, _state: State) {}
 
-    Identifier<State>(_node: Identifier, _state: State, _runFnc: any) {}
+    Identifier(_node: Identifier, _state: State) {}
 
-    PrivateIdentifier<State>(_node: PrivateIdentifier, _state: State, _runFnc: any) {}
+    PrivateIdentifier(_node: PrivateIdentifier, _state: State) {}
 
-    Literal<State>(_node: Literal, _state: State, _runFnc: any) {}
+    Literal(_node: Literal, _state: State) {}
 
-    TaggedTemplateExpression<State>(node: TaggedTemplateExpression, state: State, runFnc: any) {
-        runFnc(node.tag, state, 'Expression')
-        runFnc(node.quasi, state, 'Expression')
+    TaggedTemplateExpression(node: TaggedTemplateExpression, state: State) {
+        this.Expression(node.tag, state)
+        this.Expression(node.quasi, state)
     }
 
-    ClassDeclaration<State>(node: ClassDeclaration, state: State, runFnc: any) {
-        runFnc(node, state, 'Class')
+    ClassDeclaration(node: ClassDeclaration, state: State) {
+        this.Class(node, state)
     }
 
-    ClassExpression<State>(node: ClassExpression, state: State, runFnc: any) {
-        runFnc(node, state, 'Class')
+    ClassExpression(node: ClassExpression, state: State) {
+        this.Class(node, state)
     }
 
-    Class<State>(node: ClassExpression | ClassDeclaration, state: State, runFnc: any) {
-        if (node.id) runFnc(node.id, state, 'Pattern')
-        if (node.superClass) runFnc(node.superClass, state, 'Expression')
-        runFnc(node.body, state)
+    Class(node: ClassExpression | ClassDeclaration, state: State) {
+        if (node.id) {
+            this.Pattern(node.id, state)
+        }
+        if (node.superClass) {
+            this.Expression(node.superClass, state)
+        }
+        this.runByType(node.body, state)
     }
 
-    ClassBody<State>(node: ClassBody, state: State, runFnc: any) {
-        for (let elt of node.body) runFnc(elt, state)
+    ClassBody(node: ClassBody, state: State) {
+        for (let elt of node.body) {
+            this.runByType(elt, state)
+        }
     }
 
-    MethodDefinition<State>(node: MethodDefinition, state: State, runFnc: any) {
-        if (node.computed) runFnc(node.key, state, 'Expression')
-        if (node.value) runFnc(node.value, state, 'Expression')
+    MethodDefinition(node: MethodDefinition, state: State) {
+        if (node.computed) {
+            this.Expression(node.key, state)
+        }
+        if (node.value) {
+            this.Expression(node.value, state)
+        }
     }
 
-    PropertyDefinition<State>(node: PropertyDefinition, state: State, runFnc: any) {
-        if (node.computed) runFnc(node.key, state, 'Expression')
-        if (node.value) runFnc(node.value, state, 'Expression')
+    PropertyDefinition(node: PropertyDefinition, state: State) {
+        if (node.computed) {
+            this.Expression(node.key, state)
+        }
+        if (node.value) {
+            this.Expression(node.value, state)
+        }
     }
 
-    Property<State>(node: Property, state: State, runFnc: any) {
-        if (node.computed) runFnc(node.key, state, 'Expression')
-        if (node.value) runFnc(node.value, state, 'Expression')
+    Property(node: Property, state: State) {
+        if (node.computed) {
+            this.Expression(node.key, state)
+        }
+        if (node.value) {
+            this.Expression(node.value, state)
+        }
     }
 }
