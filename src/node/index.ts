@@ -1,5 +1,5 @@
-import { AcornNodeType } from './type'
-import { parse } from '../parse'
+import type { AcornNodeType } from './type'
+import parse from '../parse'
 import { throwError } from '../help/error'
 
 export default class NodeManager<T extends AcornNodeType> {

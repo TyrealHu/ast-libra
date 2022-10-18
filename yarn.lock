@@ -6372,11 +6372,6 @@ react-is@^16.8.4:
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-tapable@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/react-tapable/-/react-tapable-1.0.4.tgz#94e2c467943abfc628cc9b2e0e05f09d1ae60d5c"
-  integrity sha512-oO/TbtxBc+s44NbzxlLq/vwrb9FvtPxD1RUU1DK86N01jXLWdW3Q3RpLicD2G2cP6FPxXtho3WUCJ3zmfOqoqQ==
-
 read-pkg-up@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/read-pkg-up/-/read-pkg-up-3.0.0.tgz#3ed496685dba0f8fe118d0691dc51f4a1ff96f07"
@@ -7482,7 +7477,7 @@ ts-jest@^26.0.0:
     semver "7.x"
     yargs-parser "20.x"
 
-ts-node@^10.8.1, ts-node@^10.9.1:
+ts-node@^10.8.1:
   version "10.9.1"
   resolved "https://registry.npmjs.org/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==

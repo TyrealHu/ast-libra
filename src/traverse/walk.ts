@@ -74,7 +74,7 @@ import type {
   YieldExpression,
   LVal
 } from '../node/type'
-import type { TraverseWalk } from '../traverse/type'
+import type { TraverseWalk } from './type'
 import NodeManager from '../node'
 
 function newNodeManager<T extends AcornNodeType>(

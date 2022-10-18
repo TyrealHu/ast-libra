@@ -1,4 +1,4 @@
-import Walk from '../walk'
+import Walk from './walk'
 import type { AcornNodeType } from '../node/type'
 import type { TraverseWalk } from './type'
 
