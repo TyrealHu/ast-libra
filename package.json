@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TyrealHu/ast-utils.git"
+    "url": "git+https://github.com/TyrealHu/ast-libra.git"
   },
   "author": "tyrealhu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TyrealHu/ast-utils/issues"
+    "url": "https://github.com/TyrealHu/ast-libra/issues"
   },
-  "homepage": "https://github.com/TyrealHu/ast-utils#readme",
+  "homepage": "https://github.com/TyrealHu/ast-libra#readme",
   "dependencies": {
     "acorn": "^8.8.0",
     "acorn-walk": "^8.2.0"
