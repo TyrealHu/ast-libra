@@ -10,6 +10,8 @@ yarn.lock
 package-lock.json
 
 __test__/
+src/
+coverage/
 
 .rts2_cache_cjs/
 .rts2_cache_es/
