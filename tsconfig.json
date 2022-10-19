@@ -19,8 +19,7 @@
     "strict": true
   },
   "include": [
-    "./src/*",
-    "./types/*"
+    "./src/*"
   ],
   "exclude": [
     "node_modules",
