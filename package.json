@@ -1,6 +1,6 @@
 {
   "name": "ast-libra",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "You can use this module to operate JavaScript AST in browser or node env",
   "source": "src/index.ts",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
     "build": "microbundle --define process.env.NODE_ENV=production --sourcemap false --jsx React.createElement --tsconfig ./tsconfig.json",
     "dev": "microbundle --define process.env.NODE_ENV=development --sourcemap true --jsx React.createElement --tsconfig ./tsconfig.json",
     "watch": "microbundle watch --define process.env.NODE_ENV=development --sourcemap true --jsx React.createElement --tsconfig ./tsconfig.json",
-    "publish": "standard-version",
+    "pre-publish": "standard-version",
     "clear": "rm -rf lib",
     "commit": "git-cz",
     "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
