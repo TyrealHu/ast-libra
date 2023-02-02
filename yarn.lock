@@ -1657,6 +1657,13 @@ acorn-globals@^4.1.0:
     acorn "^6.0.1"
     acorn-walk "^6.0.1"
 
+acorn-typescript@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/acorn-typescript/-/acorn-typescript-1.0.5.tgz#35a2db643f69db5f6d6980528c4b736adfd541cd"
+  integrity sha512-L9oi3H+OsfNa//zWDZGCufK1y+ohD48R5PSug2XrVbrNmKLsQShsCwmWQETirDeF7zJQ0Aw+DvMoA+ZB8clTZQ==
+  dependencies:
+    charcodes "^0.2.0"
+
 acorn-walk@^6.0.1:
   version "6.2.0"
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-6.2.0.tgz#123cb8f3b84c2171f1f7fb252615b1c78a6b1a8c"
@@ -2272,6 +2279,11 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+
+charcodes@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/charcodes/-/charcodes-0.2.0.tgz#5208d327e6cc05f99eb80ffc814707572d1f14e4"
+  integrity sha512-Y4kiDb+AM4Ecy58YkuZrrSRJBDQdQ2L+NyS1vHHFtNtUjgutcZfx3yp1dAONI/oPaPmyGfCLx5CxL+zauIMyKQ==
 
 chardet@^0.7.0:
   version "0.7.0"
