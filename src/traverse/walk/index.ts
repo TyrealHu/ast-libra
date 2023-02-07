@@ -73,9 +73,9 @@ import type {
   WithStatement,
   YieldExpression,
   LVal
-} from '../node/type'
-import type { TraverseWalk } from './type'
-import NodeManager from '../node'
+} from '@node/type'
+import type { TraverseWalk } from '@traverse/type'
+import NodeManager from '@node'
 
 function newNodeManager<T extends AcornNodeType>(
   node: T,
@@ -125,8 +125,8 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<T>(node, parentNode, key)
     this.userWalk[node.type] &&
-      // @ts-ignore
-      this.userWalk[node.type](nodeManager, this.state)
+    // @ts-ignore
+    this.userWalk[node.type](nodeManager, this.state)
 
     this.runByNewNode(nodeManager)
   }
@@ -134,7 +134,7 @@ export default class Walk<State> {
   Program(node: Program, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<Program>(node, parentNode, key)
     this.userWalk['Program'] &&
-      this.userWalk['Program'](nodeManager, this.state)
+    this.userWalk['Program'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.runStatementArray(node.body.slice(), node, 'body')
@@ -148,7 +148,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<BlockStatement>(node, parentNode, key)
     this.userWalk['BlockStatement'] &&
-      this.userWalk['BlockStatement'](nodeManager, this.state)
+    this.userWalk['BlockStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.runStatementArray(node.body.slice(), node, 'body')
@@ -158,7 +158,7 @@ export default class Walk<State> {
   StaticBlock(node: StaticBlock, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<StaticBlock>(node, parentNode, key)
     this.userWalk['StaticBlock'] &&
-      this.userWalk['StaticBlock'](nodeManager, this.state)
+    this.userWalk['StaticBlock'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.runStatementArray(node.body.slice(), node, 'body')
@@ -188,7 +188,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ExpressionStatement'] &&
-      this.userWalk['ExpressionStatement'](nodeManager, this.state)
+    this.userWalk['ExpressionStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.expression, node, 'expression')
@@ -206,7 +206,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ParenthesizedExpression'] &&
-      this.userWalk['ParenthesizedExpression'](nodeManager, this.state)
+    this.userWalk['ParenthesizedExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.expression, node, 'expression')
@@ -220,7 +220,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ChainExpression>(node, parentNode, key)
     this.userWalk['ChainExpression'] &&
-      this.userWalk['ChainExpression'](nodeManager, this.state)
+    this.userWalk['ChainExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.expression, node, 'expression')
@@ -230,7 +230,7 @@ export default class Walk<State> {
   IfStatement(node: IfStatement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<IfStatement>(node, parentNode, key)
     this.userWalk['IfStatement'] &&
-      this.userWalk['IfStatement'](nodeManager, this.state)
+    this.userWalk['IfStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.test, node, 'test')
@@ -248,7 +248,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<LabeledStatement>(node, parentNode, key)
     this.userWalk['LabeledStatement'] &&
-      this.userWalk['LabeledStatement'](nodeManager, this.state)
+    this.userWalk['LabeledStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Statement(node.body, node, 'body')
@@ -274,7 +274,7 @@ export default class Walk<State> {
   WithStatement(node: WithStatement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<WithStatement>(node, parentNode, key)
     this.userWalk['WithStatement'] &&
-      this.userWalk['WithStatement'](nodeManager, this.state)
+    this.userWalk['WithStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.object, node, 'object')
@@ -289,7 +289,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<SwitchStatement>(node, parentNode, key)
     this.userWalk['SwitchStatement'] &&
-      this.userWalk['SwitchStatement'](nodeManager, this.state)
+    this.userWalk['SwitchStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.discriminant, node, 'discriminant')
@@ -304,7 +304,7 @@ export default class Walk<State> {
   SwitchCase(node: SwitchCase, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<SwitchCase>(node, parentNode, key)
     this.userWalk['SwitchCase'] &&
-      this.userWalk['SwitchCase'](nodeManager, this.state)
+    this.userWalk['SwitchCase'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.test) {
@@ -322,7 +322,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<AwaitExpression>(node, parentNode, key)
     this.userWalk['AwaitExpression'] &&
-      this.userWalk['AwaitExpression'](nodeManager, this.state)
+    this.userWalk['AwaitExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.argument) {
@@ -338,7 +338,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ReturnStatement>(node, parentNode, key)
     this.userWalk['ReturnStatement'] &&
-      this.userWalk['ReturnStatement'](nodeManager, this.state)
+    this.userWalk['ReturnStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.argument) {
@@ -354,7 +354,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<YieldExpression>(node, parentNode, key)
     this.userWalk['YieldExpression'] &&
-      this.userWalk['YieldExpression'](nodeManager, this.state)
+    this.userWalk['YieldExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.argument) {
@@ -370,7 +370,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ThrowStatement>(node, parentNode, key)
     this.userWalk['ThrowStatement'] &&
-      this.userWalk['ThrowStatement'](nodeManager, this.state)
+    this.userWalk['ThrowStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.argument, node, 'argument')
@@ -380,7 +380,7 @@ export default class Walk<State> {
   SpreadElement(node: SpreadElement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<SpreadElement>(node, parentNode, key)
     this.userWalk['SpreadElement'] &&
-      this.userWalk['SpreadElement'](nodeManager, this.state)
+    this.userWalk['SpreadElement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.argument, node, 'argument')
@@ -390,7 +390,7 @@ export default class Walk<State> {
   TryStatement(node: TryStatement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<TryStatement>(node, parentNode, key)
     this.userWalk['TryStatement'] &&
-      this.userWalk['TryStatement'](nodeManager, this.state)
+    this.userWalk['TryStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Statement(node.block, node, 'block')
@@ -406,7 +406,7 @@ export default class Walk<State> {
   CatchClause(node: CatchClause, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<CatchClause>(node, parentNode, key)
     this.userWalk['CatchClause'] &&
-      this.userWalk['CatchClause'](nodeManager, this.state)
+    this.userWalk['CatchClause'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.param) {
@@ -423,7 +423,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<DoWhileStatement>(node, parentNode, key)
     this.userWalk['DoWhileStatement'] &&
-      this.userWalk['DoWhileStatement'](nodeManager, this.state)
+    this.userWalk['DoWhileStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.test, node, 'test')
@@ -438,7 +438,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<WhileStatement>(node, parentNode, key)
     this.userWalk['WhileStatement'] &&
-      this.userWalk['WhileStatement'](nodeManager, this.state)
+    this.userWalk['WhileStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.test, node, 'test')
@@ -449,7 +449,7 @@ export default class Walk<State> {
   ForStatement(node: ForStatement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<ForStatement>(node, parentNode, key)
     this.userWalk['ForStatement'] &&
-      this.userWalk['ForStatement'](nodeManager, this.state)
+    this.userWalk['ForStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.init) {
@@ -472,7 +472,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ForInStatement>(node, parentNode, key)
     this.userWalk['ForInStatement'] &&
-      this.userWalk['ForInStatement'](nodeManager, this.state)
+    this.userWalk['ForInStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.ForInit(node.left, node, 'left')
@@ -488,7 +488,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ForOfStatement>(node, parentNode, key)
     this.userWalk['ForOfStatement'] &&
-      this.userWalk['ForOfStatement'](nodeManager, this.state)
+    this.userWalk['ForOfStatement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.ForInit(node.left, node, 'left')
@@ -528,7 +528,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['FunctionDeclaration'] &&
-      this.userWalk['FunctionDeclaration'](nodeManager, this.state)
+    this.userWalk['FunctionDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Function(node)
@@ -546,7 +546,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['VariableDeclaration'] &&
-      this.userWalk['VariableDeclaration'](nodeManager, this.state)
+    this.userWalk['VariableDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.declarations.slice()
@@ -567,7 +567,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['VariableDeclarator'] &&
-      this.userWalk['VariableDeclarator'](nodeManager, this.state)
+    this.userWalk['VariableDeclarator'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Pattern(node.id, node, 'id')
@@ -620,7 +620,7 @@ export default class Walk<State> {
   RestElement(node: RestElement, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<RestElement>(node, parentNode, key)
     this.userWalk['RestElement'] &&
-      this.userWalk['RestElement'](nodeManager, this.state)
+    this.userWalk['RestElement'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Pattern(node.argument, node, 'argument')
@@ -630,7 +630,7 @@ export default class Walk<State> {
   ArrayPattern(node: ArrayPattern, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<ArrayPattern>(node, parentNode, key)
     this.userWalk['ArrayPattern'] &&
-      this.userWalk['ArrayPattern'](nodeManager, this.state)
+    this.userWalk['ArrayPattern'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.elements.slice()
@@ -646,7 +646,7 @@ export default class Walk<State> {
   ObjectPattern(node: ObjectPattern, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<ObjectPattern>(node, parentNode, key)
     this.userWalk['ObjectPattern'] &&
-      this.userWalk['ObjectPattern'](nodeManager, this.state)
+    this.userWalk['ObjectPattern'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.properties.slice()
@@ -690,7 +690,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ArrayExpression>(node, parentNode, key)
     this.userWalk['ArrayExpression'] &&
-      this.userWalk['ArrayExpression'](nodeManager, this.state)
+    this.userWalk['ArrayExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.elements.slice()
@@ -710,7 +710,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ObjectExpression>(node, parentNode, key)
     this.userWalk['ObjectExpression'] &&
-      this.userWalk['ObjectExpression'](nodeManager, this.state)
+    this.userWalk['ObjectExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.properties.slice()
@@ -731,7 +731,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['FunctionExpression'] &&
-      this.userWalk['FunctionExpression'](nodeManager, this.state)
+    this.userWalk['FunctionExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Function(node)
@@ -749,7 +749,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ArrowFunctionExpression'] &&
-      this.userWalk['ArrowFunctionExpression'](nodeManager, this.state)
+    this.userWalk['ArrowFunctionExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Function(node)
@@ -767,7 +767,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['SequenceExpression'] &&
-      this.userWalk['SequenceExpression'](nodeManager, this.state)
+    this.userWalk['SequenceExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.expressions.slice()
@@ -784,7 +784,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<TemplateLiteral>(node, parentNode, key)
     this.userWalk['TemplateLiteral'] &&
-      this.userWalk['TemplateLiteral'](nodeManager, this.state)
+    this.userWalk['TemplateLiteral'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.quasis.slice()
@@ -814,7 +814,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<UpdateExpression>(node, parentNode, key)
     this.userWalk['UpdateExpression'] &&
-      this.userWalk['UpdateExpression'](nodeManager, this.state)
+    this.userWalk['UpdateExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.argument, node, 'argument')
@@ -828,7 +828,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<UnaryExpression>(node, parentNode, key)
     this.userWalk['UnaryExpression'] &&
-      this.userWalk['UnaryExpression'](nodeManager, this.state)
+    this.userWalk['UnaryExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.argument, node, 'argument')
@@ -842,7 +842,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<BinaryExpression>(node, parentNode, key)
     this.userWalk['BinaryExpression'] &&
-      this.userWalk['BinaryExpression'](nodeManager, this.state)
+    this.userWalk['BinaryExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.left, node, 'left')
@@ -857,7 +857,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<LogicalExpression>(node, parentNode, key)
     this.userWalk['LogicalExpression'] &&
-      this.userWalk['LogicalExpression'](nodeManager, this.state)
+    this.userWalk['LogicalExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.left, node, 'left')
@@ -876,7 +876,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['AssignmentExpression'] &&
-      this.userWalk['AssignmentExpression'](nodeManager, this.state)
+    this.userWalk['AssignmentExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Pattern(node.left, node, 'left')
@@ -891,7 +891,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<AssignmentPattern>(node, parentNode, key)
     this.userWalk['AssignmentPattern'] &&
-      this.userWalk['AssignmentPattern'](nodeManager, this.state)
+    this.userWalk['AssignmentPattern'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Pattern(node.left, node, 'left')
@@ -910,7 +910,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ConditionalExpression'] &&
-      this.userWalk['ConditionalExpression'](nodeManager, this.state)
+    this.userWalk['ConditionalExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.test, node, 'test')
@@ -922,7 +922,7 @@ export default class Walk<State> {
   NewExpression(node: NewExpression, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<NewExpression>(node, parentNode, key)
     this.userWalk['NewExpression'] &&
-      this.userWalk['NewExpression'](nodeManager, this.state)
+    this.userWalk['NewExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.callee, node, 'callee')
@@ -947,7 +947,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<CallExpression>(node, parentNode, key)
     this.userWalk['CallExpression'] &&
-      this.userWalk['CallExpression'](nodeManager, this.state)
+    this.userWalk['CallExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.callee, node, 'callee')
@@ -972,7 +972,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<MemberExpression>(node, parentNode, key)
     this.userWalk['MemberExpression'] &&
-      this.userWalk['MemberExpression'](nodeManager, this.state)
+    this.userWalk['MemberExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.object, node, 'object')
@@ -993,7 +993,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ExportNamedDeclaration'] &&
-      this.userWalk['ExportNamedDeclaration'](nodeManager, this.state)
+    this.userWalk['ExportNamedDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.declaration) {
@@ -1021,7 +1021,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ExportDefaultDeclaration'] &&
-      this.userWalk['ExportDefaultDeclaration'](nodeManager, this.state)
+    this.userWalk['ExportDefaultDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.declaration) {
@@ -1045,7 +1045,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['ExportAllDeclaration'] &&
-      this.userWalk['ExportAllDeclaration'](nodeManager, this.state)
+    this.userWalk['ExportAllDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.exported) {
@@ -1062,7 +1062,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ImportDeclaration>(node, parentNode, key)
     this.userWalk['ImportDeclaration'] &&
-      this.userWalk['ImportDeclaration'](nodeManager, this.state)
+    this.userWalk['ImportDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.specifiers.slice()
@@ -1081,7 +1081,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ImportExpression>(node, parentNode, key)
     this.userWalk['ImportExpression'] &&
-      this.userWalk['ImportExpression'](nodeManager, this.state)
+    this.userWalk['ImportExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.source, node, 'source')
@@ -1139,7 +1139,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['TaggedTemplateExpression'] &&
-      this.userWalk['TaggedTemplateExpression'](nodeManager, this.state)
+    this.userWalk['TaggedTemplateExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Expression(node.tag, node, 'tag')
@@ -1154,7 +1154,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ClassDeclaration>(node, parentNode, key)
     this.userWalk['ClassDeclaration'] &&
-      this.userWalk['ClassDeclaration'](nodeManager, this.state)
+    this.userWalk['ClassDeclaration'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Class(node)
@@ -1168,7 +1168,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<ClassExpression>(node, parentNode, key)
     this.userWalk['ClassExpression'] &&
-      this.userWalk['ClassExpression'](nodeManager, this.state)
+    this.userWalk['ClassExpression'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       this.Class(node)
@@ -1188,7 +1188,7 @@ export default class Walk<State> {
   ClassBody(node: ClassBody, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<ClassBody>(node, parentNode, key)
     this.userWalk['ClassBody'] &&
-      this.userWalk['ClassBody'](nodeManager, this.state)
+    this.userWalk['ClassBody'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       const nodeArr = node.body.slice()
@@ -1206,7 +1206,7 @@ export default class Walk<State> {
   ) {
     const nodeManager = newNodeManager<MethodDefinition>(node, parentNode, key)
     this.userWalk['MethodDefinition'] &&
-      this.userWalk['MethodDefinition'](nodeManager, this.state)
+    this.userWalk['MethodDefinition'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.computed) {
@@ -1229,7 +1229,7 @@ export default class Walk<State> {
       key
     )
     this.userWalk['PropertyDefinition'] &&
-      this.userWalk['PropertyDefinition'](nodeManager, this.state)
+    this.userWalk['PropertyDefinition'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.computed) {
@@ -1244,7 +1244,7 @@ export default class Walk<State> {
   Property(node: Property, parentNode?: AcornNodeType, key?: string) {
     const nodeManager = newNodeManager<Property>(node, parentNode, key)
     this.userWalk['Property'] &&
-      this.userWalk['Property'](nodeManager, this.state)
+    this.userWalk['Property'](nodeManager, this.state)
 
     this.runByNewNode(nodeManager, () => {
       if (node.computed) {

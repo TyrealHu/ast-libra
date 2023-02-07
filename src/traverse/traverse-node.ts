@@ -1,5 +1,5 @@
 import Walk from './walk'
-import type { AcornNodeType } from '../node/type'
+import type { AcornNodeType } from '@node/type'
 import type { TraverseWalk } from './type'
 
 export class TraverseNode<State> {

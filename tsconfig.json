@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
     "allowJs": false,
     "target": "es6",
     "allowSyntheticDefaultImports": true,
@@ -11,6 +12,18 @@
       "dom.iterable",
       "es2017"
     ],
+    "paths": {
+      "@traverse/*": ["./traverse/*"],
+      "@traverse": ["./traverse/index.ts"],
+      "@parse/*": ["./parse/*"],
+      "@parse": ["./parse/index.ts"],
+      "@node/*": ["./node/*"],
+      "@node": ["./node/index.ts"],
+      "@help/*": ["./help/*"],
+      "@help": ["./help/index.ts"],
+      "@generate/*": ["./generate/*"],
+      "@generate": ["./generate/index.ts"]
+    },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveConstEnums": true,

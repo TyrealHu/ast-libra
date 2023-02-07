@@ -1,11 +1,25 @@
-import { parse as acornParse } from 'acorn'
+import { Parser } from 'acorn'
+import tsPlugin from 'acorn-typescript'
 import type { Options } from 'acorn'
-import { AcornNodeTypeMap } from '../node/type'
+import { AcornNodeTypeMap } from '@node/type'
 
 export default function parse(
   input: string,
-  options: Options
+  options: Options & {
+    typescript?: {
+      dts: boolean
+    }
+  }
 ): AcornNodeTypeMap['Program'] {
-  // @ts-ignore
-  return acornParse(input, options)
+  const parser = Parser
+
+  if (options.typescript) {
+    parser.extend(
+      tsPlugin({
+        dts: options.typescript.dts
+      })
+    )
+  }
+
+  return parser.parse(input, options) as AcornNodeTypeMap['Program']
 }

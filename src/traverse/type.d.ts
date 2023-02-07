@@ -1,4 +1,4 @@
-import type { AcornNodeTypeMap } from '../node/type'
+import type { AcornNodeTypeMap } from '@node/type'
 import type NodeManager from '../node'
 
 type WalkFunc<T extends keyof AcornNodeTypeMap, TState> = (
