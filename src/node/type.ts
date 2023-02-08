@@ -38,6 +38,8 @@ export interface AcornNodeTypeMap {
   ClassDeclaration: ClassDeclaration
   ClassExpression: ClassExpression
   ClassBody: ClassBody
+  ClassMethod: ClassMethod,
+  ClassPrivateMethod: ClassPrivateMethod
   MethodDefinition: MethodDefinition
   PropertyDefinition: PropertyDefinition
   StaticBlock: StaticBlock
@@ -302,24 +304,49 @@ export interface BlockStatement extends BaseNodeProps {
   body: Statement[]
 }
 
-export interface FunctionDeclaration extends BaseNodeProps {
-  type: 'FunctionDeclaration'
-  id: Identifier | null
+interface BodilessFunctionOrMethodBase extends HasDecorators {
+  id: Identifier | null | undefined
   generator?: boolean
   async: boolean
   params: Array<Identifier | Pattern | RestElement>
   expression: boolean
+}
+
+interface FunctionBase extends BodilessFunctionOrMethodBase {
   body: BlockStatement
 }
 
-export interface FunctionExpression extends BaseNodeProps {
+export type MethodKind = 'constructor' | 'method' | 'get' | 'set';
+
+interface MethodBase {
+  static: boolean
+  computed: boolean
+  key: Identifier | Literal | Expression | PrivateIdentifier
+  kind: MethodKind
+  value: FunctionExpression | null
+  decorators?: Decorator[];
+}
+
+export interface TypeAnnotationBase extends BaseNodeProps {
+  typeAnnotation: Node;
+}
+
+interface ClassMemberBase extends BaseNodeProps, HasDecorators {
+  static: boolean;
+  computed: boolean;
+  // ts
+  accessibility?: Accessibility | null;
+  override?: true | null;
+  abstract?: true | null;
+  optional?: true | null;
+}
+
+export interface FunctionDeclaration extends FunctionBase, BaseNodeProps {
+  type: 'FunctionDeclaration'
+}
+
+export interface FunctionExpression extends FunctionBase, BaseNodeProps {
   type: 'FunctionExpression'
-  id: Identifier | null
-  generator?: boolean
-  async: boolean
-  params: Array<Identifier | Pattern | RestElement>
-  expression: boolean
-  body: BlockStatement
 }
 
 export interface ClassDeclaration extends BaseNodeProps {
@@ -341,21 +368,24 @@ export interface ClassBody extends BaseNodeProps {
   body: Array<StaticBlock | Identifier | MethodDefinition | PropertyDefinition>
 }
 
-export interface MethodDefinition extends BaseNodeProps {
+export interface MethodDefinition extends MethodBase, BaseNodeProps {
   type: 'MethodDefinition'
-  static: boolean
-  computed: boolean
-  key: Identifier | Literal | Expression
-  kind: 'get' | 'set' | 'method' | 'constructor'
-  value: FunctionExpression | null
 }
 
-export interface PropertyDefinition extends BaseNodeProps {
+export interface PropertyDefinition extends ClassMemberBase, DeclarationBase {
   type: 'PropertyDefinition'
   static: boolean
   computed: boolean
   key: Identifier | Literal | Expression
   value: Expression | null
+
+  // TypeScript only: (TODO: Not in spec)
+  typeAnnotation?: TypeAnnotationBase | null;
+  // TypeScript only
+  optional?: true;
+  definite?: true;
+  readonly?: true;
+  override?: true;
 }
 
 export interface StaticBlock extends BaseNodeProps {
@@ -389,9 +419,7 @@ export interface ExportSpecifier extends BaseNodeProps {
 
 export interface ImportDeclaration extends BaseNodeProps {
   type: 'ImportDeclaration'
-  specifiers: Array<
-    ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
-  >
+  specifiers: Array<ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier>
   source: Literal
 }
 
@@ -625,16 +653,488 @@ export interface AssignmentPattern extends BaseNodeProps {
   right: Expression
 }
 
-export interface ArrowFunctionExpression extends BaseNodeProps {
+export interface ArrowFunctionExpression extends BodilessFunctionOrMethodBase, BaseNodeProps {
   type: 'ArrowFunctionExpression'
-  async: boolean
-  params: Array<Identifier | Pattern | RestElement>
-  expression: boolean
   body: BlockStatement | Expression
-  generator?: boolean
 }
 
 export interface AwaitExpression extends BaseNodeProps {
   type: 'AwaitExpression'
   argument: Expression
+}
+
+export interface ClassMethod extends BaseNodeProps, MethodBase {
+  type: 'ClassMethod';
+}
+
+export interface ClassPrivateMethod extends BaseNodeProps, MethodBase {
+  type: 'ClassPrivateMethod';
+  key: PrivateIdentifier,
+  computed: false;
+}
+
+export interface Decorator extends BaseNodeProps {
+  type: 'Decorator';
+  expression: Expression;
+  arguments?: Array<Expression | SpreadElement>;
+}
+
+export type Accessibility = 'public' | 'protected' | 'private';
+
+export interface Node extends BaseNodeProps {
+  type: string;
+
+  [key: string]: any;
+}
+
+export interface HasDecorators extends BaseNodeProps {
+  decorators?: Decorator[];
+}
+
+export interface DeclarationBase extends BaseNodeProps {
+  // TypeScript allows declarations to be prefixed by `declare`.
+  declare?: true;
+}
+
+export interface TsTypeAnnotation extends BaseNodeProps {
+  type: 'TSTypeAnnotation';
+  typeAnnotation: TsType;
+}
+
+export interface TypeParameterDeclarationBase extends BaseNodeProps {
+  params: Array<TsTypeParameter>;
+}
+
+export interface TsTypeParameterDeclaration
+  extends TypeParameterDeclarationBase {
+  type: 'TSTypeParameterDeclaration';
+  params: TsTypeParameter[];
+}
+
+export interface TsTypeParameter extends BaseNodeProps {
+  type: 'TSTypeParameter';
+  // TODO(Babel-8): remove string type support
+  name: string | Identifier;
+  in?: boolean;
+  out?: boolean;
+  constraint?: TsType;
+  default?: TsType;
+}
+
+export interface TypeParameterInstantiationBase extends BaseNodeProps {
+  params: Node[];
+}
+
+
+export interface TsTypeParameterInstantiation extends TypeParameterInstantiationBase {
+  type: 'TSTypeParameterInstantiation';
+  params: TsType[];
+}
+
+export interface TSParameterProperty extends HasDecorators {
+  // Note: This has decorators instead of its parameter.
+  type: 'TSParameterProperty';
+  // At least one of `accessibility` or `readonly` must be set.
+  accessibility?: Accessibility | null;
+  readonly?: true | null;
+  override?: true | null;
+  parameter: Identifier | AssignmentPattern;
+}
+
+export interface OptTSDeclareFunction extends FunctionBase, DeclarationBase {
+  type: 'TSDeclareFunction';
+}
+
+export interface TSDeclareFunction extends OptTSDeclareFunction {
+  id: Identifier;
+}
+
+export interface TSDeclareMethod extends FunctionBase, MethodBase {
+  type: 'TSDeclareMethod';
+  kind: MethodKind;
+}
+
+export interface TsQualifiedName extends BaseNodeProps {
+  type: 'TSQualifiedName';
+  left: TsEntityName;
+  right: Identifier;
+}
+
+export type TsEntityName = Identifier | TsQualifiedName;
+
+export type TsSignatureDeclaration =
+  | TsCallSignatureDeclaration
+  | TsConstructSignatureDeclaration
+  | TsMethodSignature
+  | TsFunctionType
+  | TsConstructorType;
+
+export interface TsSignatureDeclarationOrIndexSignatureBase extends BaseNodeProps {
+  // Not using TypeScript's "ParameterDeclaration" here, since it's inconsistent with regular functions.
+  params: Array<Identifier | RestElement | ObjectPattern | ArrayPattern>;
+  returnType: TsTypeAnnotation | undefined | null;
+  // TODO(Babel-8): Remove
+  parameters: Array<Identifier | RestElement | ObjectPattern | ArrayPattern>;
+  typeAnnotation: TsTypeAnnotation | undefined | null;
+}
+
+export interface TsSignatureDeclarationBase
+  extends TsSignatureDeclarationOrIndexSignatureBase {
+  typeParameters: TsTypeParameterDeclaration | undefined | null;
+}
+
+// ================
+// TypeScript type members (for type literal / interface / class)
+// ================
+
+export type TsTypeElement =
+  | TsCallSignatureDeclaration
+  | TsConstructSignatureDeclaration
+  | TsPropertySignature
+  | TsMethodSignature
+  | TsIndexSignature;
+
+export interface TsCallSignatureDeclaration extends TsSignatureDeclarationBase {
+  type: 'TSCallSignatureDeclaration';
+}
+
+export interface TsConstructSignatureDeclaration
+  extends TsSignatureDeclarationBase {
+  type: 'TSConstructSignatureDeclaration';
+}
+
+export interface TsNamedTypeElementBase extends BaseNodeProps {
+  // Not using TypeScript's `PropertyName` here since we don't have a `ComputedPropertyName` node type.
+  // This is usually an Identifier but may be e.g. `Symbol.iterator` if `computed` is true.
+  key: Expression;
+  computed: boolean;
+  optional?: true;
+}
+
+export interface TsPropertySignature extends TsNamedTypeElementBase {
+  type: 'TSPropertySignature';
+  readonly?: true;
+  typeAnnotation?: TsTypeAnnotation;
+  initializer?: Expression;
+}
+
+export interface TsMethodSignature
+  extends TsSignatureDeclarationBase,
+    TsNamedTypeElementBase {
+  type: 'TSMethodSignature';
+  kind: 'method' | 'get' | 'set';
+}
+
+// *Not* a ClassMemberBase: Can't have accessibility, can't be abstract, can't be optional.
+export interface TsIndexSignature
+  extends TsSignatureDeclarationOrIndexSignatureBase {
+  readonly?: true;
+  static?: true;
+  type: 'TSIndexSignature';
+  // Note: parameters.length must be 1.
+}
+
+// ================
+// TypeScript types
+// ================
+
+export type TsType =
+  | TsKeywordType
+  | TsThisType
+  | TsFunctionOrConstructorType
+  | TsTypeReference
+  | TsTypeQuery
+  | TsTypeLiteral
+  | TsArrayType
+  | TsTupleType
+  | TsOptionalType
+  | TsRestType
+  | TsUnionOrIntersectionType
+  | TsConditionalType
+  | TsInferType
+  | TsParenthesizedType
+  | TsTypeOperator
+  | TsIndexedAccessType
+  | TsMappedType
+  | TsLiteralType // TODO: This probably shouldn't be included here.
+  | TsImportType
+  | TsTypePredicate;
+
+export type TsTypeBase = BaseNodeProps;
+
+export type TsKeywordTypeType =
+  | 'TSAnyKeyword'
+  | 'TSUnknownKeyword'
+  | 'TSNumberKeyword'
+  | 'TSObjectKeyword'
+  | 'TSBooleanKeyword'
+  | 'TSBigIntKeyword'
+  | 'TSStringKeyword'
+  | 'TSSymbolKeyword'
+  | 'TSVoidKeyword'
+  | 'TSUndefinedKeyword'
+  | 'TSNullKeyword'
+  | 'TSNeverKeyword'
+  | 'TSIntrinsicKeyword';
+
+export interface TsKeywordType extends TsTypeBase {
+  type: TsKeywordTypeType;
+}
+
+export interface TsThisType extends TsTypeBase {
+  type: 'TSThisType';
+}
+
+export type TsFunctionOrConstructorType = TsFunctionType | TsConstructorType;
+
+export interface TsFunctionType extends TsTypeBase, TsSignatureDeclarationBase {
+  type: 'TSFunctionType';
+  typeAnnotation: TsTypeAnnotation; // not optional
+}
+
+export interface TsConstructorType
+  extends TsTypeBase,
+    TsSignatureDeclarationBase {
+  type: 'TSConstructorType';
+  typeAnnotation: TsTypeAnnotation;
+  abstract: boolean;
+}
+
+export interface TsTypeReference extends TsTypeBase {
+  type: 'TSTypeReference';
+  typeName: TsEntityName;
+  typeParameters?: TsTypeParameterInstantiation;
+}
+
+export interface TsTypePredicate extends TsTypeBase {
+  type: 'TSTypePredicate';
+  parameterName: Identifier | TsThisType;
+  typeAnnotation: TsTypeAnnotation | null;
+  asserts: boolean;
+}
+
+// `typeof` operator
+export interface TsTypeQuery extends TsTypeBase {
+  type: 'TSTypeQuery';
+  exprName: TsEntityName | TsImportType;
+  typeParameters?: TsTypeParameterInstantiation;
+}
+
+export interface TsTypeLiteral extends TsTypeBase {
+  type: 'TSTypeLiteral';
+  members: TsTypeElement[];
+}
+
+export interface TsArrayType extends TsTypeBase {
+  type: 'TSArrayType';
+  elementType: TsType;
+}
+
+export interface TsTupleType extends TsTypeBase {
+  type: 'TSTupleType';
+  elementTypes: Array<TsType | TsNamedTupleMember>;
+}
+
+export interface TsNamedTupleMember extends TsTypeBase {
+  type: 'TSNamedTupleMember';
+  label: Identifier;
+  optional: boolean;
+  elementType: TsType;
+}
+
+export interface TsOptionalType extends TsTypeBase {
+  type: 'TSOptionalType';
+  typeAnnotation: TsType;
+}
+
+export interface TsRestType extends TsTypeBase {
+  type: 'TSRestType';
+  typeAnnotation: TsType | TsNamedTupleMember;
+}
+
+export type TsUnionOrIntersectionType = TsUnionType | TsIntersectionType;
+
+export interface TsUnionOrIntersectionTypeBase extends TsTypeBase {
+  types: TsType[];
+}
+
+export interface TsUnionType extends TsUnionOrIntersectionTypeBase {
+  type: 'TSUnionType';
+}
+
+export interface TsIntersectionType extends TsUnionOrIntersectionTypeBase {
+  type: 'TSIntersectionType';
+}
+
+export interface TsConditionalType extends TsTypeBase {
+  type: 'TSConditionalType';
+  checkType: TsType;
+  extendsType: TsType;
+  trueType: TsType;
+  falseType: TsType;
+}
+
+export interface TsInferType extends TsTypeBase {
+  type: 'TSInferType';
+  typeParameter: TsTypeParameter;
+}
+
+export interface TsParenthesizedType extends TsTypeBase {
+  type: 'TSParenthesizedType';
+  typeAnnotation: TsType;
+}
+
+export interface TsTypeOperator extends TsTypeBase {
+  type: 'TSTypeOperator';
+  operator: 'keyof' | 'unique' | 'readonly';
+  typeAnnotation: TsType;
+}
+
+export interface TsIndexedAccessType extends TsTypeBase {
+  type: 'TSIndexedAccessType';
+  objectType: TsType;
+  indexType: TsType;
+}
+
+export interface TsMappedType extends TsTypeBase {
+  type: 'TSMappedType';
+  readonly?: true | '+' | '-';
+  typeParameter: TsTypeParameter;
+  optional?: true | '+' | '-';
+  typeAnnotation: TsType | undefined | null;
+  nameType: TsType | undefined | null;
+}
+
+export interface TsLiteralType extends TsTypeBase {
+  type: 'TSLiteralType';
+  literal: Literal | TemplateLiteral;
+}
+
+export interface TsImportType extends TsTypeBase {
+  type: 'TSImportType';
+  argument: Literal;
+  qualifier?: TsEntityName;
+  typeParameters?: TsTypeParameterInstantiation;
+}
+
+// ================
+// TypeScript declarations
+// ================
+
+export interface TsInterfaceDeclaration extends DeclarationBase {
+  type: 'TSInterfaceDeclaration';
+  id: Identifier | undefined | null;
+  typeParameters: TsTypeParameterDeclaration | undefined | null;
+  // TS uses "heritageClauses", but want this to resemble ClassBase.
+  extends?: TsExpressionWithTypeArguments[];
+  body: TSInterfaceBody;
+}
+
+export interface TSInterfaceBody extends BaseNodeProps {
+  type: 'TSInterfaceBody';
+  body: TsTypeElement[];
+}
+
+export interface TsExpressionWithTypeArguments extends TsTypeBase {
+  type: 'TSExpressionWithTypeArguments';
+  expression: TsEntityName;
+  typeParameters?: TsTypeParameterInstantiation;
+}
+
+export interface TsTypeAliasDeclaration extends DeclarationBase {
+  type: 'TSTypeAliasDeclaration';
+  id: Identifier;
+  typeParameters: TsTypeParameterDeclaration | undefined | null;
+  typeAnnotation: TsType;
+}
+
+export interface TsEnumDeclaration extends DeclarationBase {
+  type: 'TSEnumDeclaration';
+  const?: true;
+  id: Identifier;
+  members: TsEnumMember[];
+}
+
+export interface TsEnumMember extends BaseNodeProps {
+  type: 'TSEnumMember';
+  id: Identifier | Literal;
+  initializer?: Expression;
+}
+
+export interface TsModuleDeclaration extends DeclarationBase {
+  type: 'TSModuleDeclaration';
+  global?: true; // In TypeScript, this is only available through `node.flags`.,
+  id: TsModuleName;
+  body: TsNamespaceBody;
+}
+
+// `namespace A.B { }` is a namespace named `A` with another TsNamespaceDeclaration as its body.
+export type TsNamespaceBody = TsModuleBlock | TsNamespaceDeclaration;
+
+export interface TsModuleBlock extends BaseNodeProps {
+  type: 'TSModuleBlock';
+  body: Statement[];
+}
+
+export interface TsNamespaceDeclaration extends TsModuleDeclaration {
+  id: Identifier;
+  body: TsNamespaceBody;
+}
+
+export type TsModuleName = Identifier | Literal;
+
+export interface TsImportEqualsDeclaration extends BaseNodeProps {
+  type: 'TSImportEqualsDeclaration';
+  isExport: boolean;
+  id: Identifier;
+  importKind: 'type' | 'value';
+  moduleReference: TsModuleReference;
+}
+
+export type TsModuleReference = TsEntityName | TsExternalModuleReference;
+
+export interface TsExternalModuleReference extends BaseNodeProps {
+  type: 'TSExternalModuleReference';
+  expression: Literal;
+}
+
+// TypeScript's own parser uses ExportAssignment for both `export default` and `export =`.
+// But for @babel/parser, `export default` is an ExportDefaultDeclaration,
+// so a TsExportAssignment is always `export =`.
+export interface TsExportAssignment extends BaseNodeProps {
+  type: 'TSExportAssignment';
+  expression: Expression;
+}
+
+export interface TsNamespaceExportDeclaration extends BaseNodeProps {
+  type: 'TSNamespaceExportDeclaration';
+  id: Identifier;
+}
+
+// ================
+// TypeScript expressions
+// ================
+
+export interface TsTypeAssertionLikeBase extends BaseNodeProps {
+  expression: Expression;
+  typeAnnotation: TsType;
+}
+
+export interface TsAsExpression extends TsTypeAssertionLikeBase {
+  type: 'TSAsExpression';
+}
+
+export interface TsTypeAssertion extends TsTypeAssertionLikeBase {
+  type: 'TSTypeAssertion';
+}
+
+export interface TsNonNullExpression extends BaseNodeProps {
+  type: 'TSNonNullExpression';
+  expression: Expression;
+}
+
+export interface TsInstantiationExpression extends BaseNodeProps {
+  type: 'TSInstantiationExpression';
+  expression: Expression;
+  typeParameters: TsTypeParameterInstantiation;
 }
