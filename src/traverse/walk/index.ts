@@ -76,6 +76,7 @@ import type {
 } from '@node/type'
 import type { TraverseWalk } from '@traverse/type'
 import NodeManager from '@node'
+import TypescriptWalk from '@traverse/walk/typescript'
 
 function newNodeManager<T extends AcornNodeType>(
   node: T,
@@ -85,11 +86,12 @@ function newNodeManager<T extends AcornNodeType>(
   return new NodeManager(node, parentNode, key)
 }
 
-export default class Walk<State> {
+export default class Walk<State> extends TypescriptWalk {
   private userWalk: TraverseWalk<State>
   private state: State | undefined
 
   constructor(userWalk: TraverseWalk<State>, state?: State) {
+    super();
     this.userWalk = userWalk
     this.state = state
   }
@@ -124,6 +126,7 @@ export default class Walk<State> {
     key?: string
   ) {
     const nodeManager = newNodeManager<T>(node, parentNode, key)
+    // @ts-ignore
     this.userWalk[node.type] &&
     // @ts-ignore
     this.userWalk[node.type](nodeManager, this.state)
